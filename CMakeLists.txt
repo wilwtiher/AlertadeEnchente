@@ -42,6 +42,7 @@ target_link_libraries(${PROJECT_NAME}
         pico_stdlib 
         hardware_gpio
         hardware_i2c
+        hardware_adc
         FreeRTOS-Kernel 
         FreeRTOS-Kernel-Heap4
         hardware_pio

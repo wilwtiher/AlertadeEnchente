@@ -1,11 +1,13 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
+#include "hardware/adc.h"
 #include "hardware/i2c.h"
 #include "lib/ssd1306.h"
 #include "lib/font.h"
 #include "FreeRTOS.h"
 #include "FreeRTOSConfig.h"
 #include "task.h"
+#include "queue.h"
 #include <stdio.h>
 #include "hardware/pio.h"
 #include "ws2812.pio.h"
@@ -15,6 +17,11 @@
 #define I2C_SDA 14
 #define I2C_SCL 15
 #define endereco 0x3C
+#define ADC_JOYSTICK_X 26
+#define ADC_JOYSTICK_Y 27
+#define LED_BLUE 12
+#define LED_GREEN  11
+#define tam_quad 10
 
 // Matriz de LEDs
 #define IS_RGBW false
@@ -35,34 +42,20 @@ const char* cores[] = {
     "Notur"
 };
 uint8_t estado = 0;
-bool led_buffer[4][NUM_PIXELS] = {
+bool led_buffer[2][NUM_PIXELS] = {
     {
         0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 
+        0, 0, 1, 0, 0, 
         0, 0, 1, 0, 0, 
         0, 0, 0, 0, 0  
     },
     {
-        0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 
         0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0   
-    },
-    {
-        0, 0, 0, 0, 0, 
-        0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0  
-    },
-    {
-        0, 0, 0, 0, 0, 
-        0, 0, 1, 0, 0, 
-        0, 0, 1, 0, 0, 
-        0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0  
+        0, 1, 0, 1, 0, 
+        1, 0, 1, 0, 1, 
+        1, 0, 0, 0, 1, 
+        1, 1, 1, 1, 1   
     }
 };
 
